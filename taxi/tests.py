@@ -9,18 +9,36 @@ User = get_user_model()
 
 class SearchAndAssignTests(TestCase):
     def setUp(self):
-        self.m_toyota = Manufacturer.objects.create(name="Toyota", country="Japan")
-        self.m_ford = Manufacturer.objects.create(name="Ford", country="USA")
+        self.m_toyota = Manufacturer.objects.create(
+            name="Toyota", country="Japan"
+        )
+        self.m_ford = Manufacturer.objects.create(
+            name="Ford", country="USA"
+        )
 
-        self.car_corolla = Car.objects.create(model="Corolla", manufacturer=self.m_toyota)
-        self.car_focus = Car.objects.create(model="Focus", manufacturer=self.m_ford)
-        self.car_camry = Car.objects.create(model="Camry", manufacturer=self.m_toyota)
+        self.car_corolla = Car.objects.create(
+            model="Corolla", manufacturer=self.m_toyota
+        )
+        self.car_focus = Car.objects.create(
+            model="Focus", manufacturer=self.m_ford
+        )
+        self.car_camry = Car.objects.create(
+            model="Camry", manufacturer=self.m_toyota
+        )
 
         self.driver_alice = Driver.objects.create_user(
-            username="alice", first_name="Alice", last_name="Wonder", password="pass", license_number="ABC123"
+            username="alice",
+            first_name="Alice",
+            last_name="Wonder",
+            password="pass",
+            license_number="ABC123",
         )
         self.driver_bob = Driver.objects.create_user(
-            username="bob", first_name="Bob", last_name="Builder", password="pass", license_number="XYZ789"
+            username="bob",
+            first_name="Bob",
+            last_name="Builder",
+            password="pass",
+            license_number="XYZ789",
         )
 
         self.car_focus.drivers.add(self.driver_bob)

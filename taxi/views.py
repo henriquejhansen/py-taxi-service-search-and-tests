@@ -1,6 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import (
+    ListView,
+    DetailView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+)
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseForbidden
@@ -24,9 +30,9 @@ class ManufacturerListView(ListView):
 
     def get_queryset(self):
         qs = super().get_queryset().order_by("pk")
-        q = (self.request.GET.get("q") or "").strip()
-        if q:
-            qs = qs.filter(name__icontains=q)
+        search_term = (self.request.GET.get("q") or "").strip()
+        if search_term:
+            qs = qs.filter(name__icontains=search_term)
         return qs
 
 
@@ -58,10 +64,19 @@ class CarListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        qs = super().get_queryset().select_related("manufacturer").prefetch_related("drivers").order_by("pk")
-        q = (self.request.GET.get("q") or "").strip()
-        if q:
-            qs = qs.filter(Q(model__icontains=q) | Q(manufacturer__name__icontains=q))
+        qs = (
+            super()
+            .get_queryset()
+            .select_related("manufacturer")
+            .prefetch_related("drivers")
+            .order_by("pk")
+        )
+        search_term = (self.request.GET.get("q") or "").strip()
+        if search_term:
+            qs = qs.filter(
+                Q(model__icontains=search_term)
+                | Q(manufacturer__name__icontains=search_term)
+            )
         return qs
 
 
@@ -100,12 +115,12 @@ class DriverListView(ListView):
 
     def get_queryset(self):
         qs = super().get_queryset().order_by("pk")
-        q = (self.request.GET.get("q") or "").strip()
-        if q:
+        search_term = (self.request.GET.get("q") or "").strip()
+        if search_term:
             qs = qs.filter(
-                Q(username__icontains=q)
-                | Q(first_name__icontains=q)
-                | Q(last_name__icontains=q)
+                Q(username__icontains=search_term)
+                | Q(first_name__icontains=search_term)
+                | Q(last_name__icontains=search_term)
             )
         return qs
 
@@ -118,7 +133,14 @@ class DriverDetailView(DetailView):
 
 class DriverCreateView(LoginRequiredMixin, CreateView):
     model = Driver
-    fields = ["username", "first_name", "last_name", "email", "license_number", "password"]
+    fields = [
+        "username",
+        "first_name",
+        "last_name",
+        "email",
+        "license_number",
+        "password",
+    ]
     template_name = "taxi/driver_form.html"
     success_url = reverse_lazy("taxi:driver-list")
 
