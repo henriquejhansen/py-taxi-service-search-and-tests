@@ -1,13 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Car: {{ car.model }}</h1>
-  <p>Manufacturer: {{ car.manufacturer.name }}</p>
+  <h1>{{ car.model }}</h1>
 
-  <p>Drivers:</p>
+  <p>Manufacturer: ({{ car.manufacturer.name }}, {{ car.manufacturer.country }})</p>
+
+  <div class="actions">
+    <a href="{% url 'taxi:car-update' pk=car.pk %}" class="btn btn-secondary">Update</a>
+    <a href="{% url 'taxi:car-delete' pk=car.pk %}" class="btn btn-danger">Delete</a>
+  </div>
+
+  <hr>
+
+  <h2>Drivers</h2>
+
+  {% if user.is_authenticated %}
+    <form method="post" action="{% url 'taxi:toggle-car-assign' pk=car.pk %}">
+      {% csrf_token %}
+      {% if user in car.drivers.all %}
+        <button type="submit" class="btn btn-danger">Unassign me from this car</button>
+      {% else %}
+        <button type="submit" class="btn btn-success">Assign me to this car</button>
+      {% endif %}
+    </form>
+  {% else %}
+    <p><a href="{% url 'login' %}">Login</a> to assign yourself to this car.</p>
+  {% endif %}
+
+  <hr>
+
+  <p>Assigned drivers:</p>
   <ul>
-    {% for d in car.drivers.all %}
-      <li>{{ d.username }}</li>
+    {% for driver in car.drivers.all %}
+      <li>{{ driver.username }} — {{ driver.first_name }} {{ driver.last_name }}</li>
     {% empty %}
       <li>No drivers assigned</li>
     {% endfor %}
